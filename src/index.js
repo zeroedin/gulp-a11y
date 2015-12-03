@@ -1,6 +1,7 @@
 'use strict';
 
 var utils        = require('./utils'),
+    fs           = require('fs'),
     a11y         = require('a11y'),
     map          = require('map-stream'),
     gutil        = require('gulp-util'),
@@ -17,6 +18,8 @@ var a11yPlugin = function (opts) {
       if (err) {
         cb(new PluginError('gulp-a11y', { name: 'a11y', message: err.message }), file);
       }
+
+      file.a11yExport = opts.export || {}
 
       file.a11y = report;
 
@@ -84,6 +87,24 @@ a11yPlugin.reporter = function (writable) {
   writable = utils.resolveWritable(writable);
 
   return map(function (file, cb) {
+
+    var error = null;
+
+    if (file.a11yExport) {
+      fs.writeFile(file.a11yExport, file.a11y, function(err) {
+
+        if (err) {
+          error = new PluginError('gulp-a11y', {
+            name: 'a11y',
+            fileName: file.path,
+            message: err
+          });
+        } else {
+          gutil.log("The report was saved!");
+        }
+
+      });
+    }
 
     var report = utils.formatReport(file, file.a11y);
 
