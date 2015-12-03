@@ -91,7 +91,7 @@ a11yPlugin.reporter = function (writable) {
     var error = null;
 
     if (file.a11yExport) {
-      fs.writeFile(file.a11yExport, file.a11y, function(err) {
+      fs.writeFile(JSON.stringify(file.a11yExport), file.a11y, function(err) {
 
         if (err) {
           error = new PluginError('gulp-a11y', {
